@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Quiz</title>
+  <style>
+    body {
+      background: #0a1d56;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .quiz-container, .result-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .answer-btn {
+      display: block;
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+
+    .answer-btn.correct {
+      background-color: #a0e7a0;
+    }
+
+    .answer-btn.wrong {
+      background-color: #f9a5a5;
+    }
+
+    #next-btn {
+      background-color: #001f54;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container" id="quiz">
+    <div class="quiz-header">
+      <h2 id="question">Question Text</h2>
+      <ul>
+        <li><button class="answer-btn" data-value="a"></button></li>
+        <li><button class="answer-btn" data-value="b"></button></li>
+        <li><button class="answer-btn" data-value="c"></button></li>
+        <li><button class="answer-btn" data-value="d"></button></li>
+      </ul>
+    </div>
+    <button id="next-btn">Next</button>
+  </div>
+
+  <div class="result-container" id="result" style="display: none;">
+    <h2>You scored <span id="score"></span> out of <span id="total"></span>!</h2>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Which is the smallest country in the world?",
+        options: {
+          a: "Vatican City",
+          b: "Bhutan",
+          c: "Nepal",
+          d: "Shri Lanka"
+        },
+        correct: "a"
+      },
+      {
+        question: "What is the capital of India?",
+        options: {
+          a: "Mumbai",
+          b: "Chennai",
+          c: "New Delhi",
+          d: "Kolkata"
+        },
+        correct: "c"
+      },
+      {
+        question: "HTML stands for?",
+        options: {
+          a: "Hyperlinks and Text Markup Language",
+          b: "Hyper Text Markup Language",
+          c: "Home Tool Markup Language",
+          d: "None of these"
+        },
+        correct: "b"
+      },
+      {
+        question: "Who is the father of computer?",
+        options: {
+          a: "Steve Jobs",
+          b: "Bill Gates",
+          c: "Charles Babbage",
+          d: "Alan Turing"
+        },
+        correct: "c"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const quiz = document.getElementById('quiz');
+    const questionEl = document.getElementById('question');
+    const answerBtns = document.querySelectorAll('.answer-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const resultBox = document.getElementById('result');
+    const scoreEl = document.getElementById('score');
+    const totalEl = document.getElementById('total');
+
+    function loadQuestion() {
+      resetButtons();
+      const currentQuiz = quizData[currentQuestion];
+      questionEl.innerText = `${currentQuestion + 1}. ${currentQuiz.question}`;
+      const opts = currentQuiz.options;
+
+      answerBtns[0].innerText = opts.a;
+      answerBtns[1].innerText = opts.b;
+      answerBtns[2].innerText = opts.c;
+      answerBtns[3].innerText = opts.d;
+
+      answerBtns.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('correct', 'wrong');
+        btn.onclick = () => handleAnswer(btn.dataset.value, btn);
+      });
+    }
+
+    function handleAnswer(selected, btn) {
+      const correct = quizData[currentQuestion].correct;
+
+      answerBtns.forEach(button => {
+        button.disabled = true;
+        if (button.dataset.value === correct) button.classList.add('correct');
+        else if (button.dataset.value === selected) button.classList.add('wrong');
+      });
+
+      if (selected === correct) score++;
+    }
+
+    function resetButtons() {
+      answerBtns.forEach(btn => {
+        btn.classList.remove('correct', 'wrong');
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      quiz.style.display = 'none';
+      resultBox.style.display = 'block';
+      scoreEl.innerText = score;
+      totalEl.innerText = quizData.length;
+    }
+
+    // Load first question
+    loadQuestion();
+  </script>
+</body>
+</html>
